@@ -70,6 +70,15 @@ For cross-compilation you can use the GO building [environment variables](https:
 
 However, end-to-end encryption is on the TODO list. Otherwise, if you don't trust my [tty-proxy](https://github.com/elisescu/tty-proxy) installation, you can run your own.
 
+## Runtime Env Vars:
+
+`tty-share` sets the following environment variables at runtime:
+
+```
+TTY_SHARE="1"
+TTY_SHARE_PUBLIC_URL="url to public session"
+TTY_SHARE_LOCAL_URL="url to local session"
+```
 
 ## Similar solutions
 

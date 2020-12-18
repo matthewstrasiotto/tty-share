@@ -143,12 +143,21 @@ Flags:
 		go proxy.RunProxy()
 		sessionID = proxy.SessionID
 		fmt.Printf("public session: %s\n", proxy.PublicURL)
-		defer proxy.Stop()
+
+    // Add this URL as env var to session
+		os.Setenv("TTY_SHARE_PUBLIC_URL", proxy.PublicURL)
+    defer proxy.Stop()
 	}
 
+  os.Setenv("TTY_SHARE", "1")
+  // Add local URL as env var to session
+  localURL := fmt.Sprintf("http://%s/s/local/", *listenAddress)
+  os.Setenv("TTY_SHARE_LOCAL_URL", localURL)
+
+  log.Debugf("Command environment: %v\n", ptyMaster.command.Env)
 	// Display the session information to the user, before showing any output from the command.
 	// Wait until the user presses Enter
-	fmt.Printf("local session: http://%s/s/local/\n", *listenAddress)
+	fmt.Printf("local session: %s\n", localURL)
 	fmt.Printf("Press Enter to continue!\n")
 	bufio.NewReader(os.Stdin).ReadString('\n')
 
@@ -156,6 +165,12 @@ Flags:
 		ptyMaster.Stop()
 		ptyMaster.Restore()
 	}
+
+  cleanupEnvVars := func () {
+    os.Unsetenv("TTY_SHARE_LOCAL_URL")
+    os.Unsetenv("TTY_SHARE_PUBLIC_URL")
+    os.Unsetenv("TTY_SHARE")
+  }
 
 	ptyMaster.MakeRaw()
 	defer stopPtyAndRestore()
@@ -202,4 +217,5 @@ Flags:
 	ptyMaster.Wait()
 	fmt.Printf("tty-share finished\n\n\r")
 	server.Stop()
+  cleanupEnvVars()
 }
