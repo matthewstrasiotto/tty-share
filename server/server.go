@@ -109,11 +109,15 @@ func NewTTYServer(config TTYServerConfig) (server *TTYServer) {
 			w.Header().Add("TTYSHARE-VERSION", "1")
 			w.Header().Add("TTYSHARE-WSPATH", wsPath)
 
+
 			server.handleWithTemplateHtml(w, r, "tty-share.in.html", templateModel)
 		})
 
     routesHandler.HandleFunc(fmt.Sprintf("/s/%s", session), func(w http.ResponseWriter, r *http.Request) {
-      http.Redirect(w, r, fmt.Sprintf("%s/", r.URL.Path), 301)
+      redirectPath := "/s/" + session + "/"
+
+      log.Debug(fmt.Sprintf("Redirecting %s => %s", r.URL.Path, redirectPath))
+      http.Redirect(w, r, redirectPath, 301)
     })
 
 		routesHandler.HandleFunc(fmt.Sprintf("/s/%s/ws", session), func(w http.ResponseWriter, r *http.Request) {
