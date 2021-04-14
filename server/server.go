@@ -111,6 +111,11 @@ func NewTTYServer(config TTYServerConfig) (server *TTYServer) {
 
 			server.handleWithTemplateHtml(w, r, "tty-share.in.html", templateModel)
 		})
+
+    routesHandler.HandleFunc(fmt.Sprintf("/s/%s", session), func(w http.ResponseWriter, r *http.Request) {
+      http.Redirect(w, r, fmt.Sprintf("%s/", r.URL.Path), 301)
+    })
+
 		routesHandler.HandleFunc(fmt.Sprintf("/s/%s/ws", session), func(w http.ResponseWriter, r *http.Request) {
 			server.handleWebsocket(w, r)
 		})
